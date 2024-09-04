@@ -1,4 +1,6 @@
+'use client'
 import React from 'react'
+import { useState } from 'react';
 
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -10,9 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 const handleSubmit = () => {};
 
 const Signup = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+
   return (
     <main>
-        <div className='align-middle justify-center'>
+    <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
+
+        <div className='align-middle relative justify-center'>
             <div className="max-w-md  my-40 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-black border">
                 <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
                     Welcome to FlashTellect!
@@ -22,26 +31,26 @@ const Signup = () => {
                 Create an account!
             </p>
 
-            <form className="my-8">
+            <form className="my-8" onSubmit={handleSubmit}>
                 
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                     <LabelInputContainer>
                         <Label htmlFor="firstname">First name</Label>
-                        <Input id="firstname" placeholder="John" type="text" />
+                        <Input id="firstname" placeholder="John" type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)}/>
                     </LabelInputContainer>
                     <LabelInputContainer>
                         <Label htmlFor="lastname">Last name</Label>
-                        <Input id="lastname" placeholder="Cena" type="text" />
+                        <Input id="lastname" placeholder="Cena" type="text" value={lastname} onChange={(e) => setLastname(e.target.value)}/>
                     </LabelInputContainer>
                 </div>
                 <LabelInputContainer className="mb-4">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" placeholder="myemail@example.com" type="email" />
+                    <Input id="email" placeholder="myemail@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 </LabelInputContainer>
 
                 <LabelInputContainer className="mb-4 pb-5">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" placeholder="••••••••" type="password" />
+                    <Input id="password" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 </LabelInputContainer>
     
                 <button
@@ -51,7 +60,6 @@ const Signup = () => {
                     Sign up &rarr;
                 </button>
  
-
             </form>
 
         </div>

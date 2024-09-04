@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+'use client'
+import { useState } from 'react'
 
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -15,35 +16,37 @@ const Login = () => {
 
   return (
     <main>
-        <div className='align-middle justify-center'>
-            <div className="max-w-md  my-40 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-black border">
-                <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-                    Welcome back!
-                </h2>
-            <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-                Please fill in your details to login.
-            </p>
+      <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
 
-            <form className="my-8" onSubmit={handleSubmit}>
-                
-                <LabelInputContainer className="mb-4">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" placeholder="myemail@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </LabelInputContainer>
+      <div className='align-middle relative justify-center'>
+        <div className="max-w-md  my-40 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-black border">
+              <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+                  Welcome back!
+              </h2>
+          <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+              Please fill in your details to login.
+          </p>
 
-                <LabelInputContainer className="mb-4 pb-5">
-                    <Label htmlFor="password">Password</Label>
-                    <Input id="password" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                </LabelInputContainer>
-    
-                <button
-                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 hover:border-2 hover:border-slate-700  w-full text-white rounded-md h-10 font-medium"
-                type="submit"
-                >
-                    Login &rarr;
-                </button>
+          <form className="my-8" onSubmit={handleSubmit}>
+              
+              <LabelInputContainer className="mb-4">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input id="email" placeholder="myemail@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </LabelInputContainer>
 
-            </form>
+              <LabelInputContainer className="mb-4 pb-5">
+                  <Label htmlFor="password">Password</Label>
+                  <Input id="password" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </LabelInputContainer>
+  
+              <button
+              className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 hover:border-2 hover:border-slate-700  w-full text-white rounded-md h-10 font-medium"
+              type="submit"
+              >
+                  Login &rarr;
+              </button>
+
+          </form>
 
         </div>
       </div>

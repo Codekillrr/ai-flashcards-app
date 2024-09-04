@@ -2,10 +2,125 @@
 
 import { motion } from "framer-motion";
 import React from 'react'
+import { useState } from "react";
 
-const Flashcards = () => {
+const SavedFlashcards = () => {
+  const [flashcardCollection, setFlashcardsCollection] = useState(
+    [
+      {
+        title: 'The User made title',
+        flashcards:[
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+        ] 
+      }, 
+      {
+        title: 'The User made title',
+        flashcards:[
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.'
+          },
+        ] 
+      }, 
+      {
+        title: 'The User made title',
+        flashcards:[
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+        ] 
+      }, 
+      {
+        title: 'The User made title',
+        flashcards:[
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+          {
+            front: 'This the the front with the Question?',
+            back: 'This is the back with the Answer.'
+          },
+        ] 
+      }, 
+    ]
+  );
+
+  const [flipped, setFlipped] = useState(
+    flashcardCollection.map(collection => new Array(collection.flashcards.length).fill(false))
+  );
+
+  const flipCard = (collectionIndex: number, flashcardIndex: number) => {
+    setFlipped(prevFlipped => {
+      const newFlipped = prevFlipped.map(arr => [...arr]);  // Create a deep copy of the 2D array
+      newFlipped[collectionIndex][flashcardIndex] = !newFlipped[collectionIndex][flashcardIndex];  // Toggle the specific flashcard
+      return newFlipped;
+    });
+  };
+
   return (
     <main>
+      <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
       <div className="relative flex flex-col gap-4 items-center justify-center px-4 py-10 my-10 mx-5">
 
         <div className="text-3xl md:text-7xl font-bold dark:text-white text-center p-4 border-b-[1px] border-white">
@@ -14,8 +129,8 @@ const Flashcards = () => {
 
       </div>
 
-      <div className="flex flex-col flex-1 mx-20">
-        {[...new Array(4)].map((i) => (
+      <div className="flex relative flex-col flex-1 mx-20">
+        {flashcardCollection.map((flashcardList, collectionIndex) => (
           <motion.div 
           initial={{ opacity: 0.0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -24,9 +139,10 @@ const Flashcards = () => {
             duration: 0.2,
             ease: "easeInOut",
           }}
-        className="m-10 p-2 md:p-10 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-auto h-full">
+          viewport={{ once: true }}
+        className="m-10 p-2 md:p-10 rounded-2xl border border-neutral-700 bg-slate-950 w-auto h-full">
           
-          <h1 className="text-4xl md:text-5xl dark:text-white text-center p-4"> Title </h1>
+          <h1 className="text-4xl md:text-5xl dark:text-white text-center p-4"> {flashcardList.title} </h1>
 
           <motion.div
           initial={{ opacity: 0.0, y: 40 }}
@@ -36,19 +152,32 @@ const Flashcards = () => {
             duration: 0.2,
             ease: "easeInOut",
           }}
+          viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-2 sm:mt-5 lg:grid-cols-4 pt-2 m-10">
 
-            {[...new Array(10)].map((i) => (
-              <div className="relative group block p-2 h-full w-full">
+            {flashcardList.flashcards.map((flashcard, flashcardIndex) => (
+              <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => flipCard(collectionIndex, flashcardIndex)} 
+              className="relative text-left group block p-2 h-full w-full">
                 <Card>
-                  <CardTitle>
-                    item {i}
-                  </CardTitle>
-                  <CardDescription>
-                    The primary purpose of photosynthesis in plants is to convert light energy from the sun into chemical energy stored in glucose, a sugar that serves as food for the plant. Oxygen is also released as a byproduct during this process.
-                  </CardDescription>
+                    {flipped[collectionIndex][flashcardIndex] ? (
+                      <>
+                        <CardTitle>Answer:</CardTitle>
+                        <CardDescription>
+                          {flashcard.back}
+                        </CardDescription>
+                      </>) 
+                    : (
+                      <CardTitle>
+                        {flashcard.front}
+                      </CardTitle>)
+                    }
+
                 </Card>
-                </div>
+              </motion.button>
             ))}
 
           </motion.div>
@@ -70,13 +199,14 @@ export const Card = ({
 }) => {
   return (
     <div
-      className="transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden
-       bg-black border
-       dark:border-white/[0.2] hover:border-slate-700 hover:border-8 hover:p-1 relative z-20">
+    className="transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden
+      bg-black border hover:border-4 hover:p-3
+      dark:border-white/[0.2] hover:border-slate-700 relative z-20">
 
       <div className="relative z-50">
         <div className="p-4">{children}</div>
       </div>
+
     </div>
   );
 };
@@ -106,4 +236,4 @@ export const CardDescription = ({
   );
 };
 
-export default Flashcards
+export default SavedFlashcards

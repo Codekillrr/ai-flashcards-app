@@ -8,7 +8,7 @@ import { useState } from "react";
 const items = ["The primary purpose of photosynthesis in plants is to convert light energy from the sun into chemical energy stored in glucose, a sugar that serves as food for the plant. Oxygen is also released as a byproduct during this process.", 'rock', "hello 2", "right", "foot", "up", "slide"];
 
 export default function Generate() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(true);
   const [loaded, setLoaded] = useState(true);
   const [prompt, setPrompt] = useState('');
   const [flashcards, setFlashcards] = useState([
@@ -33,14 +33,39 @@ export default function Generate() {
       back: 'This is the back with the Answer.'
     },
   ]);
-  const [fliped, setFliped] = useState(new Array(flashcards.length).fill(false))
+  const [flipped, setFlipped] = useState(new Array(flashcards.length).fill(false))
 
   const handleGenerate = async () => {
-    setSubmitted(!submitted);
+    if(prompt.length === 0)
+      return;
+
+    setLoaded(false);
+    setSubmitted(true);
+
+    const submittedPrompt = prompt.trim();
+    console.log(submittedPrompt);
+    
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'text/plain',
+      },
+      body: submittedPrompt,
+    });
+
+    console.log(response.json());
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const flashcardsRes = await response.json();
+    setFlashcards(flashcardsRes);
+    setLoaded(true);
   }
 
   const flipCard = (index: number) => {
-    setFliped((prevFliped: boolean[]) => {
+    setFlipped((prevFliped: boolean[]) => {
       const newHash = [...prevFliped];
       newHash[index] = !newHash[index];
       return newHash;
@@ -49,6 +74,8 @@ export default function Generate() {
 
   return (
     <main>
+      <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
+
       <div className="relative flex flex-col gap-4 items-center justify-center px-4 py-10 my-10 mx-5">
 
         <div className="text-3xl md:text-7xl font-bold dark:text-white text-center p-4 border-b-[1px] border-white">
@@ -60,7 +87,8 @@ export default function Generate() {
           <input className="flex-1 min-h-[50px] md:w-[700px]
           rounded-full p-2 pl-4 focus:border-slate-700 focus:border-4 
           focus:ring-0 focus:outline-none border-black text-white bg-opacity-40 bg-slate-600" 
-          placeholder="Type here..." type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}/> 
+          placeholder="Type here..." type="text" value={prompt} 
+          onChange={(e) => setPrompt(e.target.value)}/> 
           {/* value={input} onChange={handleInputChange}  */}
 
           <button onClick={handleGenerate} className="bg-black transition-all duration-300 hover:font-bold hover:border-4 hover:border-slate-700 hover:scale-105 hover:px-3 hover:py-1 dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2">
@@ -71,7 +99,7 @@ export default function Generate() {
 
       </div>
 
-      {submitted && (<div className="flex flex-1">
+      {submitted && (<div className="flex relative flex-1">
         <motion.div 
           initial={{ opacity: 0.0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -80,7 +108,7 @@ export default function Generate() {
             duration: 0.2,
             ease: "easeInOut",
           }}
-          className=" m-10 p-2 md:p-10 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 w-full h-full">
+          className=" m-10 p-2 md:p-10 rounded-2xl border border-neutral-700 bg-slate-950 w-full h-full">
 
           <h1 className="text-4xl md:text-5xl dark:text-white text-center p-4"> Flashcards </h1>
 
@@ -99,12 +127,12 @@ export default function Generate() {
               {flashcards.map((flashcard, index) => (
                 <motion.button
                 whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.8 }}
+                whileTap={{ scale: 0.9 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => flipCard(index)} 
                 className="relative text-left group block p-2 h-full w-full">
                   <Card>
-                      {fliped[index] ? (
+                      {flipped[index] ? (
                         <>
                           <CardTitle>Answer:</CardTitle>
                           <CardDescription>
@@ -118,7 +146,7 @@ export default function Generate() {
                       }
 
                   </Card>
-                  </motion.button>
+                </motion.button>
               ))}
 
             </motion.div>
