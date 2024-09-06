@@ -3,6 +3,14 @@
 import { motion } from "framer-motion";
 import React from 'react'
 import { useState } from "react";
+import Navbar from "@/components/Navbar";
+
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const SavedFlashcards = () => {
   const [flashcardCollection, setFlashcardsCollection] = useState(
@@ -118,9 +126,12 @@ const SavedFlashcards = () => {
     });
   };
 
+  const func = () => { console.log('hello') };
+
   return (
     <main>
-      <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
+      <Navbar />
+      <div className='bg-gradient-to-t from-slate-900 fixed w-full h-full z-0' ></div>
       <div className="relative flex flex-col gap-4 items-center justify-center px-4 py-10 my-10 mx-5">
 
         <div className="text-3xl md:text-7xl font-bold dark:text-white text-center p-4 border-b-[1px] border-white">
@@ -162,21 +173,23 @@ const SavedFlashcards = () => {
               transition={{ duration: 0.2 }}
               onClick={() => flipCard(collectionIndex, flashcardIndex)} 
               className="relative text-left group block p-2 h-full w-full">
-                <Card>
-                    {flipped[collectionIndex][flashcardIndex] ? (
-                      <>
-                        <CardTitle>Answer:</CardTitle>
-                        <CardDescription>
-                          {flashcard.back}
-                        </CardDescription>
-                      </>) 
-                    : (
-                      <CardTitle>
-                        {flashcard.front}
-                      </CardTitle>)
-                    }
 
-                </Card>
+                {flipped[collectionIndex][flashcardIndex] ? (
+                  <Card className="bg-gradient-to-t from-slate-900">
+                    <CardTitle>Answer:</CardTitle>
+                    <CardDescription>
+                      {flashcard.back}
+                    </CardDescription>
+                  </Card>) 
+                : (
+                  <Card>
+                  <CardTitle>
+                    {flashcard.front}
+                  </CardTitle>
+                  </Card>
+                  )
+                }
+
               </motion.button>
             ))}
 
@@ -193,15 +206,18 @@ const SavedFlashcards = () => {
 }
 
 export const Card = ({
+  className,
   children,
 }: {
+  className?: string;
   children: React.ReactNode;
 }) => {
   return (
     <div
-    className="transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden
-      bg-black border hover:border-4 hover:p-3
-      dark:border-white/[0.2] hover:border-slate-700 relative z-20">
+    className={cn(
+      "transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden bg-black border hover:border-4 hover:p-3 dark:border-white/[0.2] hover:border-slate-700 relative z-20",
+        className
+      )}>
 
       <div className="relative z-50">
         <div className="p-4">{children}</div>

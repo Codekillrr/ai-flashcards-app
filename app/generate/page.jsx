@@ -3,77 +3,63 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import ReactMarkdown from 'react-markdown';
+import Navbar from "@/components/Navbar";
+import SpringModal from "@/components/SpringModal";
 //import { LoadingCards, Card, CardTitle, CardDescription } from "../components/Cards";
 
-const items = ["The primary purpose of photosynthesis in plants is to convert light energy from the sun into chemical energy stored in glucose, a sugar that serves as food for the plant. Oxygen is also released as a byproduct during this process.", 'rock', "hello 2", "right", "foot", "up", "slide"];
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+//import { assert } from "console";
+export function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
 
 export default function Generate() {
-  const [submitted, setSubmitted] = useState(true);
-  const [loaded, setLoaded] = useState(true);
-  const [prompt, setPrompt] = useState('');
-  const [flashcards, setFlashcards] = useState([
-    {
-      front: 'This the the front with the Question?',
-      back: 'This is the back with the Answer.'
-    },
-    {
-      front: 'This the the front with the Question?',
-      back: 'This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.This is the back with the Answer.'
-    },
-    {
-      front: 'This the the front with the Question?',
-      back: 'This is the back with the Answer.'
-    },
-    {
-      front: 'This the the front with the Question?',
-      back: 'This is the back with the Answer.'
-    },
-    {
-      front: 'This the the front with the Question?',
-      back: 'This is the back with the Answer.'
-    },
-  ]);
+  const [submitted, setSubmitted] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [flashcards, setFlashcards] = useState([]);
   const [flipped, setFlipped] = useState(new Array(flashcards.length).fill(false))
+  const [openSave, setOpenSave] = useState(false);
 
   const handleGenerate = async () => {
-    if(prompt.length === 0)
-      return;
-
+    if(prompt.length === 0) return;
+  
     setLoaded(false);
     setSubmitted(true);
-
-    const submittedPrompt = prompt.trim();
-    console.log(submittedPrompt);
-    
-    const response = await fetch('/api/generate', {
+  
+    fetch('api/gen', {
       method: 'POST',
       headers: {
-          'Content-Type': 'text/plain',
+        'Content-Type': 'text'
       },
-      body: submittedPrompt,
-    });
-
-    console.log(response.json());
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-
-    const flashcardsRes = await response.json();
-    setFlashcards(flashcardsRes);
-    setLoaded(true);
+      body: prompt,
+    })
+    .then((res) => res.json())  
+    .then((data) => {
+      setFlashcards(data);
+      setLoaded(true);
+    })
+    .catch((err) => console.error('Error:', err));
   }
 
-  const flipCard = (index: number) => {
-    setFlipped((prevFliped: boolean[]) => {
+  const flipCard = (index) => {
+    setFlipped((prevFliped) => {
       const newHash = [...prevFliped];
       newHash[index] = !newHash[index];
       return newHash;
     })
   } 
 
+  const handleSave = () => {
+    //assert(flashcards.length > 0);
+    setOpenSave(true);
+  }
+
   return (
     <main>
+      <Navbar />
       <div className='bg-gradient-to-t from-slate-900 to black fixed w-full h-full z-0' ></div>
 
       <div className="relative flex flex-col gap-4 items-center justify-center px-4 py-10 my-10 mx-5">
@@ -82,14 +68,14 @@ export default function Generate() {
           Generate Flashcards With AI
         </div>
 
-        <div className="flex flex-row gap-2 items-center justify-center p-5" >
+        <div className="flex flex-col gap-2 items-center justify-center p-5" >
 
-          <input className="flex-1 min-h-[50px] md:w-[700px]
-          rounded-full p-2 pl-4 focus:border-slate-700 focus:border-4 
-          focus:ring-0 focus:outline-none border-black text-white bg-opacity-40 bg-slate-600" 
-          placeholder="Type here..." type="text" value={prompt} 
+          <textarea className="min-h-[15vh] w-[40vw]
+          rounded-xl py-4 px-5 mb-4
+          focus:border-slate-700 focus:border-4 focus:ring-0 focus:px-4 focus:py-3 focus:outline-none 
+          border-black text-white bg-opacity-40 bg-slate-600" 
+          placeholder="Type specific topic or source material..." type="text" value={prompt} 
           onChange={(e) => setPrompt(e.target.value)}/> 
-          {/* value={input} onChange={handleInputChange}  */}
 
           <button onClick={handleGenerate} className="bg-black transition-all duration-300 hover:font-bold hover:border-4 hover:border-slate-700 hover:scale-105 hover:px-3 hover:py-1 dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2">
             Generate
@@ -131,31 +117,32 @@ export default function Generate() {
                 transition={{ duration: 0.2 }}
                 onClick={() => flipCard(index)} 
                 className="relative text-left group block p-2 h-full w-full">
-                  <Card>
-                      {flipped[index] ? (
-                        <>
-                          <CardTitle>Answer:</CardTitle>
-                          <CardDescription>
-                            {flashcard.back}
-                          </CardDescription>
-                        </>) 
-                      : (
-                        <CardTitle>
-                          {flashcard.front}
-                        </CardTitle>)
-                      }
-
-                  </Card>
+                  {flipped[index] ? (
+                    <Card className="bg-gradient-to-t from-slate-900">
+                      <CardTitle>Answer:</CardTitle>
+                        <CardDescription>
+                          {flashcard.back}
+                        </CardDescription>
+                    </Card>) 
+                  : (
+                    <Card>
+                      <CardTitle>
+                        {flashcard.front}
+                      </CardTitle>
+                    </Card>
+                    )
+                  }
                 </motion.button>
               ))}
 
             </motion.div>
 
             <div className="flex items-center justify-center mt-10">
-              <button
+              <button onClick={handleSave}
               className="bg-black transition-all duration-300 hover:font-bold hover:border-4 hover:border-slate-700 hover:scale-105 hover:px-3 hover:py-1 dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2">
                 Save Flashcards!
               </button>
+              <SpringModal isOpen={openSave} setIsOpen={setOpenSave} />
             </div>
 
             </>) : <LoadingCards />}
@@ -179,16 +166,38 @@ export const LoadingCards = () => {
   )
 }
 
+// export const Card = ({
+//   children,
+// }) => {
+//   return (
+//     <div
+//     className="transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden
+//       bg-black border hover:border-4 hover:p-3
+//       dark:border-white/[0.2] hover:border-slate-700 relative z-20">
+
+//       <div className="relative z-50">
+//         <div className="p-4">{children}</div>
+//       </div>
+
+//     </div>
+//   );
+// };
+
 export const Card = ({
+  className,
   children,
-}: {
-  children: React.ReactNode;
-}) => {
+}
+// : {
+//   className?: string;
+//   children: React.ReactNode;
+// } 
+) => {
   return (
     <div
-    className="transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden
-      bg-black border hover:border-4 hover:p-3
-      dark:border-white/[0.2] hover:border-slate-700 relative z-20">
+    className={cn(
+      "transition ease-in-out delay-150 rounded-lg h-full w-full p-4 overflow-hidden bg-black border hover:border-4 hover:p-3 dark:border-white/[0.2] hover:border-slate-700 relative z-20",
+        className
+      )}>
 
       <div className="relative z-50">
         <div className="p-4">{children}</div>
@@ -198,27 +207,31 @@ export const Card = ({
   );
 };
 
+
 export const CardTitle = ({
   children,
-}: {
-  children: React.ReactNode;
 }) => {
   return (
+    
     <h4 className="text-zinc-100 font-bold tracking-wide mt-4">
-      {children}
+      <ReactMarkdown>
+        {children}
+      </ReactMarkdown>
+      
     </h4>
   );
 };
 
 export const CardDescription = ({
   children,
-}: {
-  children: React.ReactNode;
 }) => {
   return (
     <p
       className="text-zinc-400 text-wrap relative mb-4 h-full w-full tracking-wide leading-relaxed text-sm">
-      {children}
+        <ReactMarkdown>
+          {children}
+        </ReactMarkdown>
+      
     </p>
   );
 };
